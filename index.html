@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>eKYC Liveness Check</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
+
+    <div class="bg-white rounded-xl shadow-2xl p-6 md:p-10 w-full max-w-xl text-center">
+        <h1 class="text-3xl font-bold text-gray-800 mb-6">eKYC Liveness Demo</h1>
+        <p class="text-gray-600 mb-8">Click the button below to initiate the liveness check. </p>
+
+        <button id="startButton"
+            class="w-full py-4 bg-indigo-600 text-white text-xl font-semibold rounded-lg shadow-lg hover:bg-indigo-700 transition duration-200 focus:outline-none focus:ring-4 focus:ring-indigo-500 focus:ring-opacity-50"
+            onClick="startLiveness();">
+            Start Liveness Check
+        </button>
+
+        <div class="mt-8 text-left">
+            <h2 class="text-xl font-semibold text-gray-700 mb-2">SDK Response:</h2>
+            <pre id="response" class="bg-gray-800 text-green-300 p-4 rounded-lg overflow-x-auto text-sm whitespace-pre-wrap"></pre>
+        </div>
+    </div>
+
+    <script src="https://liveness.everify.gov.ph/js/everify-liveness-sdk.min.js"></script>
+
+    <script>
+        const API_KEY = "eyJpdiI6IlZEZy9TaXM2aGpHOFpVejh4bGFDTmc9PSIsInZhbHVlIjoiYkRxMi9xaUJGNnJ2RHJLNGNZdlhSdz09IiwibWFjIjoiMzhhMGNlM2FjN2RmNjc5MjU0YTI0NzY5NTcxMDVjYTJmOGI5NGVhODU1Mzc5YWNiZWM2NTk0NzEzNGZiMGRmYSIsInRhZyI6IiJ9";
+
+       
+        function startLiveness() {
+            const el = document.getElementById('response');
+            el.textContent = "Attempting to start liveness check...";
+
+            if (typeof window.eKYC === 'undefined') {
+                el.textContent = "Error: eKYC SDK not loaded. Check the script tag or network connection.";
+                console.error("eKYC SDK not found.");
+                return;
+            }
+
+            window.eKYC().start({
+                pubKey: API_KEY
+            }).then((data) => {
+                el.classList.remove('text-red-400', 'bg-red-900');
+                el.classList.add('text-green-300', 'bg-gray-800');
+                el.textContent = JSON.stringify(data, null, 2);
+            }).catch((err) => {
+                const errorDetails = err && err.message ? err.message : JSON.stringify(err);
+
+                el.classList.remove('text-green-300', 'bg-gray-800');
+                el.classList.add('text-red-400', 'bg-red-900');
+                el.textContent = `LIVENESS CHECK FAILED!\n\nDetails: ${errorDetails}`;
+                
+                console.error('Liveness Error:', err);
+            });
+        }
+    </script>
+</body>
+</html>
