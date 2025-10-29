@@ -27,10 +27,6 @@
         display: none;
       }
 
-      pre {
-        display: none;
-      }
-
       #status {
         font-size: 16px;
         color: #333;
@@ -42,7 +38,6 @@
   <body>
     <button id="startBtn" onClick="startLiveness()">Start Liveness</button>
     <div id="status">Starting liveness check...</div>
-    <pre id="response"></pre>
 
     <script src="https://liveness.everify.gov.ph/js/everify-liveness-sdk.min.js"></script>
 
@@ -55,8 +50,12 @@
               "eyJpdiI6IlZEZy9TaXM2aGpHOFpVejh4bGFDTmc9PSIsInZhbHVlIjoiYkRxMi9xaUJGNnJ2RHJLNGNZdlhSdz09IiwibWFjIjoiMzhhMGNlM2FjN2RmNjc5MjU0YTI0NzY5NTcxMDVjYTJmOGI5NGVhODU1Mzc5YWNiZWM2NTk0NzEzNGZiMGRmYSIsInRhZyI6IiJ9",
           })
           .then((data) => {
-            document.getElementById("status").innerText =
-              "Liveness check completed.";
+            document.body.innerHTML = "";
+
+            const div = document.createElement("div");
+            div.id = "status";
+            div.innerText = "Liveness check completed.";
+            document.body.appendChild(div);
 
             if (window.ReactNativeWebView) {
               window.ReactNativeWebView.postMessage(JSON.stringify(data));
@@ -75,7 +74,6 @@
           });
       }
 
-      // Auto-start after short delay
       window.onload = function () {
         setTimeout(() => {
           startLiveness();
