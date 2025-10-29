@@ -8,39 +8,43 @@
     />
     <title>Liveness Check</title>
 
-<style>
-  html, body {
-    margin: 0;
-    padding: 0;
-    width: 100%;
-    height: 100%;
-    background-color: #fff;
-    overflow: hidden;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding-top: env(safe-area-inset-top); 
-  }
+    <style>
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 100%;
+        background-color: #fff;
+        overflow: hidden;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding-top: env(safe-area-inset-top);
+      }
 
       button {
-        display: none; 
+        display: none;
       }
 
       pre {
-        white-space: pre-wrap;
-        word-wrap: break-word;
-        max-width: 90%;
-        font-size: 14px;
+        display: none;
+      }
+
+      #status {
+        font-size: 16px;
         color: #333;
+        text-align: center;
       }
     </style>
   </head>
 
   <body>
     <button id="startBtn" onClick="startLiveness()">Start Liveness</button>
+    <div id="status">Starting liveness check...</div>
     <pre id="response"></pre>
 
-    <script style="padding-top: 200px;" src="https://liveness.everify.gov.ph/js/everify-liveness-sdk.min.js"></script>
+    <script src="https://liveness.everify.gov.ph/js/everify-liveness-sdk.min.js"></script>
 
     <script>
       function startLiveness() {
@@ -51,17 +55,18 @@
               "eyJpdiI6IlZEZy9TaXM2aGpHOFpVejh4bGFDTmc9PSIsInZhbHVlIjoiYkRxMi9xaUJGNnJ2RHJLNGNZdlhSdz09IiwibWFjIjoiMzhhMGNlM2FjN2RmNjc5MjU0YTI0NzY5NTcxMDVjYTJmOGI5NGVhODU1Mzc5YWNiZWM2NTk0NzEzNGZiMGRmYSIsInRhZyI6IiJ9",
           })
           .then((data) => {
-            document.getElementById("response").textContent = JSON.stringify(
-              data,
-              undefined,
-              2
-            );
+            document.getElementById("status").innerText =
+              "Liveness check completed.";
+
             if (window.ReactNativeWebView) {
               window.ReactNativeWebView.postMessage(JSON.stringify(data));
             }
           })
           .catch((err) => {
             console.error("error", err);
+            document.getElementById("status").innerText =
+              "Liveness check failed.";
+
             if (window.ReactNativeWebView) {
               window.ReactNativeWebView.postMessage(
                 JSON.stringify({ error: err })
@@ -70,10 +75,11 @@
           });
       }
 
+      // Auto-start after short delay
       window.onload = function () {
         setTimeout(() => {
           startLiveness();
-        }, 800); 
+        }, 800);
       };
     </script>
   </body>
